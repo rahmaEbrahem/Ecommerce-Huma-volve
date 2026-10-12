@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:ecommerce_app_huma_volve/core/networking/api_client.dart';
 import 'package:ecommerce_app_huma_volve/features/auth/sign_up/models/signup_req_model.dart';
 import 'package:ecommerce_app_huma_volve/features/auth/sign_up/services/signup_services.dart';
@@ -123,6 +124,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   text: 'Sign Up',
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
+                      setState(() {
+                        isloading = true;
+                      });
                       try {
                         final response = await signupServices.signUp(
                           SignupReqModel(
@@ -134,13 +138,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("signup successful")),
                         );
-                      } catch (e) {}
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+                        setState(() {
+                          isloading = false;
+                        });
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      } on DioException catch (e) {
+                        isloading = false;
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
                     }
                   },
                 ),
