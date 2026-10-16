@@ -1,6 +1,11 @@
 import 'package:ecommerce_app_huma_volve/core/networking/api_client.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/home_remot_data_implementation.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/home_remote_data.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/repository/home_repository_imp.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/repository/home_repository.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_categories_usecase.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_product_usecase.dart';
 import 'package:ecommerce_app_huma_volve/features/home/presentation/view_model/cubit/home_cubit.dart';
-import 'package:ecommerce_app_huma_volve/features/home/services/home_servies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme.dart';
@@ -18,13 +23,23 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
   late final ApiClient apiClient;
-  late final HomeServies homeServies;
+  late final HomeRemoteData homeRemoteData;
+  late final HomeRepository homeRepository;
+  late final GetCategoriesUsecase getCategoriesUsecase;
+  late final GetProductUsecase getProductUsecase;
+
   late final HomeCubit homeCubit;
   @override
   void initState() {
     apiClient = ApiClient();
-    homeServies = HomeServies(apiClient);
-    homeCubit = HomeCubit(homeServies);
+    homeRemoteData = HomeRemotDataImplementation(apiClient);
+    homeRepository = HomeRepositoryImp(homeRemoteData);
+    getCategoriesUsecase = GetCategoriesUsecase(homeRepository);
+    getProductUsecase = GetProductUsecase(homeRepository);
+    homeCubit = HomeCubit(
+      getCategoriesUsecase: getCategoriesUsecase,
+      getProductUsecase: getProductUsecase,
+    );
     super.initState();
   }
 

@@ -21,10 +21,16 @@ class HomeRepositoryImp implements HomeRepository {
 
   @override
   Future<Either<Failure, List<HomeProductEntity>>> getProducts(
-    int? categoryId,
-  ) async {
+    int? categoryId, {
+    required int offset,
+    required int limit,
+  }) async {
     try {
-      final products = await homeRemoteData.getProducts(categoryId);
+      final products = await homeRemoteData.getProducts(
+        categoryId,
+        offset: offset,
+        limit: limit,
+      );
       return Right(products as List<HomeProductEntity>);
     } catch (e) {
       return left(ErrorHandler.handle(e));

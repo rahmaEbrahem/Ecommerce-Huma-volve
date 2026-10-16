@@ -17,10 +17,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedCategoryIndex = 0;
+  late final ScrollController scrollController;
   @override
   void initState() {
+    scrollController = ScrollController();
+    scrollController.addListener(onlisten);
     super.initState();
     context.read<HomeCubit>().loadHomeData();
+  }
+
+  void onlisten() {
+    final pixels = scrollController.position.pixels;
+    final max = scrollController.position.maxScrollExtent;
+    final int triggerDistance = 200;
+    print("current pixels: $pixels,max:$max");
+
+    if (pixels >= max - triggerDistance) {
+      context.read<HomeCubit>().loadMoreProducts();
+    }
   }
 
   @override
